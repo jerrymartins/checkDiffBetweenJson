@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+  postgres:
+    container_name: webflux-postgres
+    image: postgres:10.5
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=db_comparison_diff
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - MAX_CONNECTIONS=300

@@ -1,0 +1,17 @@
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          r2dbc: DEBUG
+spring:
+  resources:
+    add-mappings: true
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/db_comparison_diff
+    username: root
+    password: root
+
+
+server:
+  port: 8000
