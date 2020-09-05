@@ -4,8 +4,11 @@ import br.com.checkdiff.domain.ComparisonRequestDomain;
 import br.com.checkdiff.domain.ComparisonResponseDomain;
 import br.com.checkdiff.domain.ComparisonResultDomain;
 import br.com.checkdiff.gateway.SaveComparisonResultGateway;
+import br.com.checkdiff.gateway.exception.SaveComparisonException;
 import br.com.checkdiff.gateway.translator.ComparisonResultDomainToComparisonResponseDomainTranslator;
 import br.com.checkdiff.usecase.exception.CheckDiffException;
+import br.com.checkdiff.usecase.exception.DataEqualsException;
+import br.com.checkdiff.usecase.exception.DifferentSizesException;
 import br.com.checkdiff.usecase.exception.InvalidJsonException;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
@@ -29,34 +32,45 @@ public class CheckDiffUseCase {
         this.saveComparisonResultGateway = saveComparisonResultGateway;
     }
 
-    public Mono<ComparisonResponseDomain> check(ComparisonRequestDomain comparisonRequestDomain) throws CheckDiffException {
-        try {
-            Gson g = new Gson();
-            Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
-            Map<String, Object> left = g.fromJson(decode(comparisonRequestDomain.getLeft()), mapType);
-            Map<String, Object> right = g.fromJson(decode(comparisonRequestDomain.getRight()), mapType);
+    /**
+     * checks differences between two json's
+     * @param comparisonRequestDomain
+     * @return
+     * @throws DataEqualsException
+     * @throws DifferentSizesException
+     * @throws InvalidJsonException
+     * @throws SaveComparisonException
+     */
+    public Mono<ComparisonResponseDomain> check(ComparisonRequestDomain comparisonRequestDomain) throws DataEqualsException, DifferentSizesException, InvalidJsonException, SaveComparisonException {
+        if (comparisonRequestDomain.getLeft().length() != comparisonRequestDomain.getRight().length()) throw new DifferentSizesException("different sizes");
+        if (comparisonRequestDomain.getLeft().equals(comparisonRequestDomain.getRight())) throw new DataEqualsException("data are equals");
 
-            Set<String> onlyOnLeft = Maps.difference(left, right).entriesOnlyOnLeft().keySet();
-            Set<String> onlyOnRight = Maps.difference(left, right).entriesOnlyOnRight().keySet();
-            Map<String, MapDifference.ValueDifference<Object>> differentValue = Maps.difference(left, right).entriesDiffering();
+        Gson g = new Gson();
+        Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+        Map<String, Object> left = g.fromJson(decode(comparisonRequestDomain.getLeft()), mapType);
+        Map<String, Object> right = g.fromJson(decode(comparisonRequestDomain.getRight()), mapType);
 
-            var result = ComparisonResultDomain.builder()
-                    .leftData(decode(comparisonRequestDomain.getLeft()))
-                    .rightData(decode(comparisonRequestDomain.getRight()))
-                    .onlyLeftFields(onlyOnLeft)
-                    .onlyRightFields(onlyOnRight)
-                    .differentFields(g.toJson(differentValue))
-                    .build();
+        Set<String> onlyOnLeft = Maps.difference(left, right).entriesOnlyOnLeft().keySet();
+        Set<String> onlyOnRight = Maps.difference(left, right).entriesOnlyOnRight().keySet();
+        Map<String, MapDifference.ValueDifference<Object>> differentValue = Maps.difference(left, right).entriesDiffering();
 
-            return saveComparisonResultGateway.save(result).map(ComparisonResultDomainToComparisonResponseDomainTranslator::translate);
+        var result = ComparisonResultDomain.builder()
+                .leftData(decode(comparisonRequestDomain.getLeft()))
+                .rightData(decode(comparisonRequestDomain.getRight()))
+                .onlyLeftFields(onlyOnLeft)
+                .onlyRightFields(onlyOnRight)
+                .differentFields(g.toJson(differentValue))
+                .build();
 
-        } catch (Exception ex) {
-            throw new CheckDiffException("deu ruim");
-        }
-
-
+        return saveComparisonResultGateway.save(result).map(ComparisonResultDomainToComparisonResponseDomainTranslator::translate);
     }
 
+    /**
+     * decodes base64 for json
+     * @param stringBase64
+     * @return
+     * @throws InvalidJsonException
+     */
     private String decode(String stringBase64) throws InvalidJsonException {
         byte[] decodedBytes = Base64.getDecoder().decode(stringBase64);
         String json = new String(decodedBytes);
@@ -64,10 +78,15 @@ public class CheckDiffUseCase {
         if (isValidJson(json)) {
             return json;
         } else {
-            throw new InvalidJsonException("algo legal aqui");
+            throw new InvalidJsonException("invalid Json");
         }
     }
 
+    /**
+     * check if json is valid
+     * @param json
+     * @return
+     */
     private boolean isValidJson(String json) {
         Gson g = new Gson();
         try {

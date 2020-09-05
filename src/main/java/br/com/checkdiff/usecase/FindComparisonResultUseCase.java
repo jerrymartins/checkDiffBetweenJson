@@ -18,12 +18,18 @@ public class FindComparisonResultUseCase {
         this.findComparisonResultGateway = findComparisonResultGateway;
     }
 
+    /**
+     * search of a comparison result
+     * @param id
+     * @return
+     * @throws FindComparisonException
+     */
     public Mono<ComparisonResultDomain> findById(Long id) throws FindComparisonException {
         try {
             LOGGER.info("Searching Comparison result with id {}", id);
             return findComparisonResultGateway.findById(id);
         } catch (Exception exception) {
-            throw new FindComparisonException("erro a descrever");
+            throw new FindComparisonException("problems when searching");
         }
     }
 

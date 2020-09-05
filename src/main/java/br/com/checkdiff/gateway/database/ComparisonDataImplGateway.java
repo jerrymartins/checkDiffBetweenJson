@@ -21,6 +21,12 @@ public class ComparisonDataImplGateway implements SaveComparisonResultGateway, F
         this.comparisonRepository = comparisonRepository;
     }
 
+    /**
+     * saves result of comparison in database
+     * @param comparisonResultDomain
+     * @return
+     * @throws SaveComparisonException
+     */
     @Override
     public Mono<ComparisonResultDomain> save(ComparisonResultDomain comparisonResultDomain) throws SaveComparisonException {
         try {
@@ -32,6 +38,12 @@ public class ComparisonDataImplGateway implements SaveComparisonResultGateway, F
 
     }
 
+    /**
+     * searches for a comparison result in the database
+     * @param id
+     * @return
+     * @throws FindComparisonException
+     */
     @Override
     public Mono<ComparisonResultDomain> findById(Long id) throws FindComparisonException {
         try {

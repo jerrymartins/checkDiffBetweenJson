@@ -1,9 +1,9 @@
-logging:
-  level:
-    org:
-      springframework:
-        data:
-          r2dbc: DEBUG
+server:
+  port: 8000
+  error:
+    include-message: always
+    include-binding-errors: always
+
 spring:
   resources:
     add-mappings: true
@@ -13,5 +13,9 @@ spring:
     password: root
 
 
-server:
-  port: 8000
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          r2dbc: DEBUG

@@ -4,9 +4,12 @@ import br.com.checkdiff.domain.ComparisonRequestDomain;
 import br.com.checkdiff.domain.ComparisonResponseDomain;
 import br.com.checkdiff.domain.ComparisonResultDomain;
 import br.com.checkdiff.gateway.exception.FindComparisonException;
+import br.com.checkdiff.gateway.exception.SaveComparisonException;
 import br.com.checkdiff.usecase.CheckDiffUseCase;
 import br.com.checkdiff.usecase.FindComparisonResultUseCase;
-import br.com.checkdiff.usecase.exception.CheckDiffException;
+import br.com.checkdiff.usecase.exception.DataEqualsException;
+import br.com.checkdiff.usecase.exception.DifferentSizesException;
+import br.com.checkdiff.usecase.exception.InvalidJsonException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -27,7 +30,7 @@ public class CheckDiffController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<ComparisonResponseDomain> check(@RequestBody @Valid ComparisonRequestDomain comparisonRequestDomain) throws CheckDiffException {
+    public Mono<ComparisonResponseDomain> check(@RequestBody @Valid ComparisonRequestDomain comparisonRequestDomain) throws DataEqualsException, DifferentSizesException, SaveComparisonException, InvalidJsonException {
         return checkDiffUseCase.check(comparisonRequestDomain);
     }
 
