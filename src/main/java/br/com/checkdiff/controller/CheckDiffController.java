@@ -8,13 +8,13 @@ import br.com.checkdiff.gateway.exception.SaveComparisonException;
 import br.com.checkdiff.usecase.CheckDiffUseCase;
 import br.com.checkdiff.usecase.FindComparisonResultUseCase;
 import br.com.checkdiff.usecase.exception.DataEqualsException;
-import br.com.checkdiff.usecase.exception.DifferentSizesException;
 import br.com.checkdiff.usecase.exception.InvalidJsonException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("check-diff")
@@ -30,12 +30,12 @@ public class CheckDiffController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<ComparisonResponseDomain> check(@RequestBody @Valid ComparisonRequestDomain comparisonRequestDomain) throws DataEqualsException, DifferentSizesException, SaveComparisonException, InvalidJsonException {
-        return checkDiffUseCase.check(comparisonRequestDomain);
+    public Mono<ComparisonResponseDomain> check(@RequestBody @Valid ComparisonRequestDomain comparisonRequestDomain) throws DataEqualsException, SaveComparisonException, InvalidJsonException {
+        return checkDiffUseCase.execute(comparisonRequestDomain);
     }
 
     @GetMapping(path = "{id}")
-    public Mono<ComparisonResultDomain> findById(@PathVariable Long id) throws FindComparisonException {
-        return findComparisonResultUseCase.findById(id);
+    public Mono<ComparisonResultDomain> findById(@PathVariable @NotNull Long id) throws FindComparisonException {
+        return findComparisonResultUseCase.execute(id);
     }
 }

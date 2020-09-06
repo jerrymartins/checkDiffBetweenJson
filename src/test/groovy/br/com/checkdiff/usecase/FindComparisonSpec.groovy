@@ -1,3 +1,5 @@
+package br.com.checkdiff.usecase
+
 import br.com.checkdiff.gateway.FindComparisonResultGateway
 import br.com.checkdiff.gateway.exception.FindComparisonException
 import br.com.checkdiff.gateway.exception.NotFoundComparisonException
@@ -14,7 +16,7 @@ class FindComparisonSpec extends Specification {
         Long id = 1l
 
         when: 'usecase is called'
-        findComparisonResultUseCase.findById(id)
+        findComparisonResultUseCase.execute(id)
 
         then: 'gateway is called'
         findComparisonResultGateway.findById(id) >> new NotFoundComparisonException("some message")
