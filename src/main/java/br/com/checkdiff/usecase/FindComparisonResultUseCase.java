@@ -29,7 +29,7 @@ public class FindComparisonResultUseCase {
             LOGGER.info("Searching Comparison result with id {}", id);
             return findComparisonResultGateway.findById(id);
         } catch (Exception exception) {
-            throw new FindComparisonException("problems when searching");
+            throw new FindComparisonException(exception.getMessage());
         }
     }
 

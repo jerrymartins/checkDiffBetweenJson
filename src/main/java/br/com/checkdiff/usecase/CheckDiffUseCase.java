@@ -41,8 +41,7 @@ public class CheckDiffUseCase {
      * @throws InvalidJsonException
      * @throws SaveComparisonException
      */
-    public Mono<ComparisonResponseDomain> check(ComparisonRequestDomain comparisonRequestDomain) throws DataEqualsException, DifferentSizesException, InvalidJsonException, SaveComparisonException {
-        if (comparisonRequestDomain.getLeft().length() != comparisonRequestDomain.getRight().length()) throw new DifferentSizesException("different sizes");
+    public Mono<ComparisonResponseDomain> check(ComparisonRequestDomain comparisonRequestDomain) throws DataEqualsException, InvalidJsonException, SaveComparisonException {
         if (comparisonRequestDomain.getLeft().equals(comparisonRequestDomain.getRight())) throw new DataEqualsException("data are equals");
 
         Gson g = new Gson();
@@ -62,7 +61,9 @@ public class CheckDiffUseCase {
                 .differentFields(g.toJson(differentValue))
                 .build();
 
-        return saveComparisonResultGateway.save(result).map(ComparisonResultDomainToComparisonResponseDomainTranslator::translate);
+        var map = saveComparisonResultGateway.save(result);
+
+        return map.map(ComparisonResultDomainToComparisonResponseDomainTranslator::translate);
     }
 
     /**
