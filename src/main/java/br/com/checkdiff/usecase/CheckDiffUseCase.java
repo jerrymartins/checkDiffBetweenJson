@@ -41,9 +41,16 @@ public class CheckDiffUseCase {
      * @throws InvalidJsonException
      * @throws SaveComparisonException
      */
-    public Mono<ComparisonResponseDomain> check(ComparisonRequestDomain comparisonRequestDomain) throws DataEqualsException, InvalidJsonException, SaveComparisonException {
+    public Mono<ComparisonResponseDomain> execute(ComparisonRequestDomain comparisonRequestDomain) throws DataEqualsException, InvalidJsonException, SaveComparisonException {
         if (comparisonRequestDomain.getLeft().equals(comparisonRequestDomain.getRight())) throw new DataEqualsException("data are equals");
 
+        var result = check(comparisonRequestDomain);
+
+        return saveComparisonResultGateway.save(result)
+                .map(ComparisonResultDomainToComparisonResponseDomainTranslator::translate);
+    }
+
+    public ComparisonResultDomain check(ComparisonRequestDomain comparisonRequestDomain) throws InvalidJsonException {
         Gson g = new Gson();
         Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
         Map<String, Object> left = g.fromJson(decode(comparisonRequestDomain.getLeft()), mapType);
@@ -53,17 +60,13 @@ public class CheckDiffUseCase {
         Set<String> onlyOnRight = Maps.difference(left, right).entriesOnlyOnRight().keySet();
         Map<String, MapDifference.ValueDifference<Object>> differentValue = Maps.difference(left, right).entriesDiffering();
 
-        var result = ComparisonResultDomain.builder()
+        return ComparisonResultDomain.builder()
                 .leftData(decode(comparisonRequestDomain.getLeft()))
                 .rightData(decode(comparisonRequestDomain.getRight()))
                 .onlyLeftFields(onlyOnLeft)
                 .onlyRightFields(onlyOnRight)
                 .differentFields(g.toJson(differentValue))
                 .build();
-
-        var map = saveComparisonResultGateway.save(result);
-
-        return map.map(ComparisonResultDomainToComparisonResponseDomainTranslator::translate);
     }
 
     /**
