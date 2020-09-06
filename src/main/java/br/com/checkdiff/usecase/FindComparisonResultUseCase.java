@@ -24,7 +24,7 @@ public class FindComparisonResultUseCase {
      * @return
      * @throws FindComparisonException
      */
-    public Mono<ComparisonResultDomain> findById(Long id) throws FindComparisonException {
+    public Mono<ComparisonResultDomain> execute(Long id) throws FindComparisonException {
         try {
             LOGGER.info("Searching Comparison result with id {}", id);
             return findComparisonResultGateway.findById(id);
