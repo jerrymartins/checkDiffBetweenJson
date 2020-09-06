@@ -9,6 +9,7 @@ public class ComparisonResultDomainToComparisonResponseDomainTranslator {
 
     public ComparisonResponseDomain translate(ComparisonResultDomain comparisonResultDomain) {
         return ComparisonResponseDomain.builder()
+                .id(comparisonResultDomain.getId())
                 .differentFields(comparisonResultDomain.getDifferentFields())
                 .onlyLeftFields(comparisonResultDomain.getOnlyLeftFields())
                 .onlyRightFields(comparisonResultDomain.getOnlyRightFields())

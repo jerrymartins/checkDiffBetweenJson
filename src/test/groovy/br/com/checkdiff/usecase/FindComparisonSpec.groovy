@@ -2,8 +2,6 @@ package br.com.checkdiff.usecase
 
 import br.com.checkdiff.gateway.FindComparisonResultGateway
 import br.com.checkdiff.gateway.exception.FindComparisonException
-import br.com.checkdiff.gateway.exception.NotFoundComparisonException
-import br.com.checkdiff.usecase.FindComparisonResultUseCase
 import spock.lang.Specification
 
 class FindComparisonSpec extends Specification {
@@ -19,7 +17,9 @@ class FindComparisonSpec extends Specification {
         findComparisonResultUseCase.execute(id)
 
         then: 'gateway is called'
-        findComparisonResultGateway.findById(id) >> new NotFoundComparisonException("some message")
+        findComparisonResultGateway.findById(id) >> {
+            throw new FindComparisonException('some message')
+        }
 
         then: 'must be throw exception not found'
         thrown(FindComparisonException)

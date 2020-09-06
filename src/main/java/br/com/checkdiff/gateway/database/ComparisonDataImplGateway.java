@@ -48,7 +48,7 @@ public class ComparisonDataImplGateway implements SaveComparisonResultGateway, F
     public Mono<ComparisonResultDomain> findById(Long id) throws FindComparisonException {
         try {
             return comparisonRepository.findById(id).map(ComparisonResultEntityToComparisonResultDomainTranslator::translate)
-                    .switchIfEmpty(Mono.error(new NotFoundComparisonException("comparison not found")));
+                    .switchIfEmpty(Mono.error(new NotFoundComparisonException("comparison not found " + id)));
         } catch (Exception exception) {
             throw new FindComparisonException(exception.getMessage());
         }
