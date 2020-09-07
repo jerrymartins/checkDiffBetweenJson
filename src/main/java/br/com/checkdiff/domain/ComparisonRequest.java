@@ -4,13 +4,14 @@ import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Builder
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ComparisonRequestDomain {
+public class ComparisonRequest implements Serializable {
     private String id;
 
     @NotNull

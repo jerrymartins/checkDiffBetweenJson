@@ -1,7 +1,7 @@
 package br.com.checkdiff.usecase;
 
 import br.com.checkdiff.domain.ComparisonResultDomain;
-import br.com.checkdiff.gateway.FindComparisonResultGateway;
+import br.com.checkdiff.gateway.FindComparisonResultByIdGateway;
 import br.com.checkdiff.gateway.exception.FindComparisonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public class FindComparisonResultUseCase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FindComparisonResultUseCase.class);
+public class FindComparisonResultByIdUseCase {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FindComparisonResultByIdUseCase.class);
 
-    private final FindComparisonResultGateway findComparisonResultGateway;
+    private final FindComparisonResultByIdGateway findComparisonResultByIdGateway;
 
-    public FindComparisonResultUseCase(FindComparisonResultGateway findComparisonResultGateway) {
-        this.findComparisonResultGateway = findComparisonResultGateway;
+    public FindComparisonResultByIdUseCase(FindComparisonResultByIdGateway findComparisonResultByIdGateway) {
+        this.findComparisonResultByIdGateway = findComparisonResultByIdGateway;
     }
 
     /**
@@ -26,7 +26,7 @@ public class FindComparisonResultUseCase {
      */
     public Mono<ComparisonResultDomain> execute(Long id) throws FindComparisonException {
         LOGGER.info("Searching Comparison result with id {}", id);
-        return findComparisonResultGateway.findById(id);
+        return findComparisonResultByIdGateway.findById(id);
     }
 
 }

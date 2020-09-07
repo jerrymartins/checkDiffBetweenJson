@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM adoptopenjdk/openjdk11:latest
 VOLUME /tmp
 ARG JAR_FILE
 ADD ${JAR_FILE} app.jar
